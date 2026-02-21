@@ -21,3 +21,30 @@ Pastikan Termux kamu sudah memiliki alat-alat dasar:
 pkg update && pkg upgrade -y
 pkg install python mpv ffmpeg rust binutils build-essential -y
 termux-setup-storage
+2. Install Library Utama
+Bash
+
+pip install requests rich pillow yt-dlp
+
+### 3. Clone & Jalankan
+Bash
+
+git clone [https://github.com/USERNAME_KAMU/NAMA_REPO_KAMU.git](https://github.com/USERNAME_KAMU/NAMA_REPO_KAMU.git)
+cd NAMA_REPO_KAMU
+python abyss_ai.py
+
+🎮 Panduan Perintah
+Perintah	Deskripsi	Contoh
+apa itu AI?	Chat biasa dengan AI	jelaskan cara kerja mesin
+lihat [path]	Menyuruh AI melihat gambar	lihat /sdcard/foto.jpg ini siapa?
+setel [judul]	Putar musik YouTube	setel lagu denny caknan
+[Link URL]	Download Video otomatis	https://vt.tiktok.com/xxxx/
+clear	Hapus semua memori chat	clear
+🤝 Kontribusi
+
+Project ini dikembangkan oleh Hadi dengan bantuan Gemini AI. Jangan ragu untuk melakukan Fork atau memberikan Star ⭐ jika kamu suka project ini!
+
+<p align="center">Built with ❤️ for Termux Users</p>
+
+
+-----
