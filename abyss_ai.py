@@ -4,6 +4,7 @@ from rich.panel import Panel
 from rich.live import Live
 from rich.markdown import Markdown
 from rich.prompt import Prompt
+from rich.align import Align
 
 # --- CONFIG MESIN ---
 # Saya sudah set OpenRouter sebagai mesin utama untuk Chat dan Vision (Mata)
@@ -94,13 +95,46 @@ def stream_infinite_music(query):
 # --- FITUR 5: TAMPILAN ---
 def hacker_loading():
     console.clear()
-    tasks = ["BYPASSING CRYPTOGRAPHY", "OPENING EYES", "SYNCING OPENROUTER", "STARTING ENGINE"]
-    for task in tasks:
-        console.print(f"[bold green][#] {task}...", end="\r"); time.sleep(0.4)
-        console.print(f"[bold green][OK] {task}          ")
-    time.sleep(0.5); console.clear()
-    console.print(Panel.fit("[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Vision Active[/dim]", border_style="green", padding=(1, 5)))
-
+    width = console.width
+    height = console.height
+    
+    tasks = [
+        "INITIALIZING NEURAL LINK", 
+        "BYPASSING CRYPTOGRAPHY", 
+        "OPENING ABYSS EYES", 
+        "SYNCING OPENROUTER ENGINE", 
+        "ESTABLISHING PROTOCOL"
+    ]
+    
+    # Jarak vertikal (ke tengah layar)
+    print("\n" * (height // 4))
+    
+    # Animasi loading tanpa [OK]
+    with console.status("", spinner="aesthetic") as status:
+        for task in tasks:
+            # Hitung jarak spasi agar teks pas di tengah horizontal
+            padding = (width - len(task)) // 2
+            # Cetak teks task saja
+            console.print(" " * padding + f"[bold green]{task}[/bold green]")
+            time.sleep(0.7)
+    
+    time.sleep(0.5)
+    console.clear()
+    
+    # Jarak vertikal untuk Banner utama
+    print("\n" * (height // 3))
+    
+    # Banner utama tetap di tengah
+    from rich.align import Align
+    banner = Panel.fit(
+        "[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Vision Active[/dim]", 
+        border_style="green", 
+        padding=(1, 5)
+    )
+    console.print(Align.center(banner))
+    time.sleep(1.5)
+    console.clear()
+    
 def get_ai_response(user_input):
     chat_history.append({"role": "user", "content": user_input})
     for engine in CONFIG:
