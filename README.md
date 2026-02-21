@@ -1,48 +1,23 @@
-[readme.md](https://github.com/user-attachments/files/25445208/readme.md)
-# 🌌 Abyss AI Assistant (v5.0) - Termux Edition
-
-Asisten pribadi canggih untuk Termux yang menggabungkan kecerdasan buatan, multimedia, dan alat bantu hacker dalam satu interface terminal yang keren.
+# 🌌 ABYSS AI v5.0 - HADI EDITION
+**Abyss AI** adalah asisten multifungsi berbasis terminal (Termux) yang menggabungkan kecerdasan buatan, hiburan musik, dan alat pengunduh media dalam satu sistem terpadu.
 
 ---
 
 ## 🚀 Fitur Utama
-- **🤖 Dual Engine AI**: Menggunakan Groq (Llama 3.3) dan OpenRouter (Gemini 2.0).
-- **👁️ Abyss Vision**: AI bisa "melihat" dan menjelaskan isi foto atau screenshot.
-- **📻 Infinite Radio**: Putar musik YouTube non-stop dengan fitur **Bass Boost**.
-- **📥 Media Downloader**: Ambil video TikTok (No WM), IG, dan YouTube langsung ke folder Download.
-- **💾 Code Manager**: Fitur simpan kodingan otomatis ke folder `saves/`.
-- **🧠 Smart Memory**: AI yang ingat konteks obrolan sebelumnya.
+* **🤖 Otak Ganda (Multi-Engine)**: Menggunakan **GROQ (Llama 3.3)** untuk chat super cepat dan **OpenRouter (Gemini 2.0)** sebagai cadangan.
+* **👁️ Abyss Vision**: Mampu menganalisis dan membaca gambar langsung dari penyimpanan HP.
+* **📻 Infinite Radio**: Streaming musik YouTube tanpa henti dengan kualitas hemat kuota dan efek *Bass Boost*.
+* **📥 Universal Downloader**: Download video dari TikTok (No WM), Instagram, dan YouTube langsung ke `/sdcard/Download`.
+* **💾 Auto Code Saver**: Menyimpan snippet kodingan dari AI secara otomatis ke folder `saves/`.
+* **🧠 Smart Memory**: Mengingat konteks percakapan hingga 20 pesan terakhir.
 
 ---
 
-## 🛠️ Persiapan & Instalasi (Tutorial)
+## 🛠️ Langkah-Langkah Instalasi
 
-Buka Termux kamu dan jalankan perintah di bawah ini secara berurutan untuk menginstal semua tools yang dibutuhkan:
-
-### 1. Update Sistem & Install Package Utama
+### 1. Update & Install Package Pendukung
+Pastikan Termux kamu sudah memiliki alat-alat dasar:
 ```bash
 pkg update && pkg upgrade -y
-pkg install python git mpv ffmpeg -y
+pkg install python mpv ffmpeg rust binutils build-essential -y
 termux-setup-storage
-
-#### install library pendukung [tools]
-pip install requests rich google-generativeai pillow yt-dlp
-
-##### konfigurasi apikei 
-Buka file abyss_ai.py menggunakan nano dan masukkan API Key milikmu pada bagian CONFIG dan genai.configure.
-
-    Groq API: Bikin di sini
-
-    Gemini API: Bikin di sini
-
-###### cara menjalannkanya 
-python abyss_ai.py
-
-###### panduan perintah chat
-Perintah,Contoh Penggunaan
-Setel Musik,setel lagu peterpan
-Gunakan Mata,lihat /sdcard/Download/foto.jpg ini foto apa?
-Download,Langsung tempel link TikTok/IG/YouTube
-Bersihkan,clear (Menghapus memori & layar)
-Keluar,exit atau quit
-
