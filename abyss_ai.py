@@ -41,7 +41,6 @@ CONFIG = get_farm_engines()
 def ask_vision(image_path, prompt):
     try:
         if not os.path.exists(image_path): return f"✘ File tidak ditemukan: {image_path}"
-        # Pakai akun OpenRouter pertama untuk vision
         or_acc = [e for e in CONFIG if "OR-ACC" in e['name']]
         if not or_acc: return "✘ Tidak ada akun OpenRouter untuk Vision!"
         
@@ -106,25 +105,40 @@ def hacker_loading():
     time.sleep(1.5)
     console.clear()
 
-# --- LOGIKA RESPONS (TERNAK MODE) ---
+# --- LOGIKA RESPONS (TRANSPARENT FARMER MODE) ---
 def get_ai_response(user_input):
     chat_history.append({"role": "user", "content": user_input})
-    for engine in CONFIG:
+    total_sapi = len(CONFIG)
+    
+    for index, engine in enumerate(CONFIG, 1):
         try:
+            # Monitor progress di balik layar
+            console.print(f"[dim]Checking Engine {index}/{total_sapi}: {engine['name']}...[/dim]")
+            
             res = requests.post(
                 engine['url'], 
                 headers={"Authorization": f"Bearer {engine['key']}"}, 
                 json={"messages": chat_history[-10:], "model": engine['model'], "temperature": 0.6}, 
                 timeout=15
             )
+            
             if res.status_code == 200:
                 answer = res.json()['choices'][0]['message']['content']
                 chat_history.append({"role": "assistant", "content": answer})
                 save_memory(chat_history)
+                # Notifikasi sukses
+                console.print(f"[bold green]✔ Active: {engine['name']}[/bold green]")
                 return answer, engine['name']
-            print(f" [!] {engine['name']} Limit, pindah akun...")
+            
+            elif res.status_code == 429:
+                console.print(f"[bold yellow]! {engine['name']} Limit, mencoba akun lain...[/bold yellow]")
+            else:
+                console.print(f"[bold red]✘ {engine['name']} Error {res.status_code}[/bold red]")
+                
         except:
+            console.print(f"[red]✘ Koneksi gagal ke {engine['name']}[/red]")
             continue
+            
     return "Semua akun di kandang LIMIT/ERROR!", "FAILED"
 
 def render_response(text, provider):
@@ -174,4 +188,5 @@ if __name__ == "__main__":
                     fname = f"saves/code_{int(time.time())}.txt"
                     with open(fname, "w") as f: f.write(ans)
                     console.print(f"[bold green]✔ Tersimpan di folder saves/[/bold green]")
-    except KeyboardInterrupt: pass
+    except KeyboardInterrupt:
+        pass
