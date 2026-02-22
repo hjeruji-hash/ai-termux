@@ -83,7 +83,7 @@ def stream_infinite_music(query):
 def hacker_loading():
     console.clear()
     total = len(CONFIG)
-    tasks = ["INITIALIZING NEURAL LINK", "SYNCING API FARM", "ESTABLISHING PROTOCOL"]
+    tasks = ["INITIALIZING NEURAL LINK", "SYNCING", "ESTABLISHING PROTOCOL"]
     print("\n" * (console.height // 5))
     with console.status("", spinner="aesthetic") as status:
         for t in tasks:
@@ -91,15 +91,15 @@ def hacker_loading():
             console.print(" " * padding + f"[bold green]{t}[/bold green]")
             time.sleep(0.4)
             
-    console.print(f"\n[bold cyan] 🔎 SCANNING KANDANG API (MAX-CAPACITY: 40)...[/bold cyan]")
+    console.print(f"\n[bold cyan] 🔎 SCANNING TOKEN (MAX-CAPACITY: 40)...[/bold cyan]")
     time.sleep(0.3)
     for i, engine in enumerate(CONFIG, 1):
         console.print(f"  [bold white]├─[/bold white] Engine {i}/{total}: [bold yellow]{engine['name']}[/bold yellow] .... [bold green]ONLINE[/bold green]")
         time.sleep(0.1) # Dipercepat biar gak kelamaan kalau sapinya banyak
-    console.print(f"\n[bold green] ✅ {total} SAPI SIAP DIPERAH![/bold green]")
+    console.print(f"\n[bold green] ✅ {total} WELCOME HADI![/bold green]")
     time.sleep(1)
     console.clear()
-    banner = Panel.fit("[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Kandang Raksasa Active[/dim]", border_style="green", padding=(1, 5))
+    banner = Panel.fit("[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | ABYYS AI Active[/dim]", border_style="green", padding=(1, 5))
     console.print(Align.center(banner))
     time.sleep(1)
     console.clear()
@@ -121,7 +121,7 @@ def get_ai_response(user_input):
                 save_memory(chat_history)
                 return answer, engine['name']
         except: continue
-    return "Semua sapi limit! Tambah lagi di nano.", "FAILED"
+    return "Semua token limit! Tambah lagi di nano.", "FAILED"
 
 def render_response(text, provider):
     full_msg = ""
