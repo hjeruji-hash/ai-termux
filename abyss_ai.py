@@ -6,25 +6,18 @@ from rich.markdown import Markdown
 from rich.prompt import Prompt
 from rich.align import Align
 
-# --- CONFIG MESIN ---
-# Saya sudah set OpenRouter sebagai mesin utama untuk Chat dan Vision (Mata)
-import os
-
-# Sekarang kode ini aman, meskipun dilihat orang di GitHub
-CONFIG = [
-import os
-
-# Bagian ini yang harus kamu samakan
+# --- CONFIG MESIN (AMANKAN DENGAN os.getenv) ---
+# Kode ini aman di GitHub karena kunci aslinya ada di Termux kamu
 CONFIG = [
     {
         "name": "GROQ",
-        "key": os.getenv("MY_GROQ_KEY"), # Pastikan namanya MY_GROQ_KEY
+        "key": os.getenv("MY_GROQ_KEY"),
         "url": "https://api.groq.com/openai/v1/chat/completions",
         "model": "llama-3.3-70b-versatile"
     },
     {
         "name": "ABYSS-EYES",
-        "key": os.getenv("MY_OR_KEY"), # Pastikan namanya MY_OR_KEY
+        "key": os.getenv("MY_OR_KEY"),
         "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "google/gemini-2.0-flash-001"
     }
@@ -33,9 +26,8 @@ CONFIG = [
 console = Console()
 MEMORY_FILE = "abyss_memory.json"
 
-# --- FITUR 1: MATA (VISION) VIA OPENROUTER ---
+# --- FITUR 1: MATA (VISION) ---
 def ask_vision(image_path, prompt):
-    """Fungsi Vision Anti-Error (Tanpa library Google)"""
     try:
         if not os.path.exists(image_path):
             return f"✘ File tidak ditemukan: {image_path}"
@@ -43,7 +35,7 @@ def ask_vision(image_path, prompt):
         with open(image_path, "rb") as image_file:
             img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
-        # Gunakan API Key OpenRouter yang tadi ijo/online
+        # Gunakan API Key OpenRouter (Mesin ke-2)
         headers = {
             "Authorization": f"Bearer {CONFIG[1]['key']}",
             "Content-Type": "application/json"
@@ -88,7 +80,6 @@ def download_media(url):
     
     console.print(f"[bold yellow]⚡ Mendownload ke Folder Download...[/bold yellow]")
     try:
-        # Memastikan yt-dlp ada
         subprocess.run(["yt-dlp", "-o", f"{save_path}/%(title)s.%(ext)s", "--no-playlist", url], check=True)
         return f"✔ **Mission Success!** Cek folder Download HP."
     except:
@@ -109,7 +100,7 @@ def stream_infinite_music(query):
     except:
         return "✘ MPV belum terinstall. Ketik: pkg install mpv -y"
 
-# --- FITUR 5: TAMPILAN ---
+# --- FITUR 5: TAMPILAN LOADING ---
 def hacker_loading():
     console.clear()
     width = console.width
@@ -119,51 +110,50 @@ def hacker_loading():
         "INITIALIZING NEURAL LINK", 
         "BYPASSING CRYPTOGRAPHY", 
         "OPENING ABYSS EYES", 
-        "SYNCING OPENROUTER ENGINE", 
+        "SYNCING ENGINES", 
         "ESTABLISHING PROTOCOL"
     ]
     
-    # Jarak vertikal (ke tengah layar)
     print("\n" * (height // 4))
-    
-    # Animasi loading tanpa [OK]
     with console.status("", spinner="aesthetic") as status:
         for task in tasks:
-            # Hitung jarak spasi agar teks pas di tengah horizontal
             padding = (width - len(task)) // 2
-            # Cetak teks task saja
             console.print(" " * padding + f"[bold green]{task}[/bold green]")
-            time.sleep(0.7)
+            time.sleep(0.5)
     
     time.sleep(0.5)
     console.clear()
-    
-    # Jarak vertikal untuk Banner utama
     print("\n" * (height // 3))
-    
-    # Banner utama tetap di tengah
-    from rich.align import Align
     banner = Panel.fit(
-        "[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Vision Active[/dim]", 
+        "[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Secure Mode[/dim]", 
         border_style="green", 
         padding=(1, 5)
     )
     console.print(Align.center(banner))
-    time.sleep(1.5)
+    time.sleep(1.2)
     console.clear()
-    
+
+# --- LOGIKA RESPONS AI ---
 def get_ai_response(user_input):
     chat_history.append({"role": "user", "content": user_input})
     for engine in CONFIG:
+        if not engine['key']: continue # Skip kalau key kosong
         try:
-            res = requests.post(engine['url'], headers={"Authorization": f"Bearer {engine['key']}"}, json={"messages": chat_history[-10:], "model": engine['model'], "temperature": 0.6}, timeout=20)
+            headers = {"Authorization": f"Bearer {engine['key']}"}
+            payload = {
+                "messages": chat_history[-10:], 
+                "model": engine['model'], 
+                "temperature": 0.6
+            }
+            res = requests.post(engine['url'], headers=headers, json=payload, timeout=20)
             if res.status_code == 200:
                 answer = res.json()['choices'][0]['message']['content']
                 chat_history.append({"role": "assistant", "content": answer})
                 save_memory(chat_history)
                 return answer, engine['name']
-        except: continue
-    return "Jalur Terputus.", "None"
+        except: 
+            continue
+    return "Jalur Terputus. Pastikan API Key di Termux sudah benar.", "None"
 
 def render_response(text, provider):
     full_msg = ""
@@ -172,10 +162,10 @@ def render_response(text, provider):
         for word in text.split(" "):
             full_msg += word + " "
             live.update(Panel(Markdown(full_msg), title=title, border_style="green", padding=(1,2)))
-            time.sleep(0.015)
+            time.sleep(0.01)
     console.print(Panel(Markdown(full_msg), title=title, border_style="green", padding=(1,2)))
 
-# --- LOGIKA UTAMA ---
+# --- LOOPING UTAMA ---
 if __name__ == "__main__":
     try:
         hacker_loading()
@@ -183,27 +173,20 @@ if __name__ == "__main__":
             msg = Prompt.ask("\n[bold green]>[/bold green]")
             if not msg: continue
             
-            if msg.lower() in ["exit", "quit", "clear"]:
-                if msg.lower() == "clear":
-                    chat_history.clear()
-                    if os.path.exists(MEMORY_FILE): os.remove(MEMORY_FILE)
-                    console.clear(); continue
+            if msg.lower() in ["exit", "quit"]:
                 break
+                
+            if msg.lower() == "clear":
+                chat_history.clear()
+                if os.path.exists(MEMORY_FILE): os.remove(MEMORY_FILE)
+                console.clear(); continue
 
-            # FITUR MATA (VISION)
+            # Fitur Mata
             if msg.lower().startswith("lihat "):
                 parts = msg.split(" ", 2)
                 if len(parts) >= 3:
-                    # Ini bagian kuncinya: .strip akan hapus tanda petik otomatis
                     path = parts[1].strip("'").strip('"')
                     tanya = parts[2]
-                    
-                    # Tambahan: Cek folder internal juga otomatis
-                    if not os.path.exists(path):
-                        internal_path = f"/data/data/com.termux/files/home/screenshot/{path}"
-                        if os.path.exists(internal_path):
-                            path = internal_path
-
                     with console.status("[bold cyan]Abyss sedang melihat..."):
                         hasil = ask_vision(path, tanya)
                     console.print(Panel(hasil, title="👁️ ABYSS VISION", border_style="cyan"))
@@ -211,11 +194,12 @@ if __name__ == "__main__":
                     console.print("[red]Format: lihat [jalur_foto] [pertanyaan][/red]")
                 continue
 
-            # Musik & Download
+            # Fitur Musik
             if msg.lower().startswith("setel "):
                 stream_infinite_music(msg.replace("setel ", ""))
                 continue
 
+            # Fitur Downloader
             if "http" in msg:
                 link = re.findall(r'(https?://\S+)', msg)[0]
                 console.print(Panel(download_media(link), title="DOWNLOADER", border_style="yellow"))
@@ -226,6 +210,7 @@ if __name__ == "__main__":
                 ans, src = get_ai_response(msg)
             render_response(ans, src)
             
+            # Auto-Save Code
             if "```" in ans:
                 if Prompt.ask("\n[yellow]Simpan kodingan? (y/n)[/yellow]", choices=["y", "n"], default="n") == "y":
                     if not os.path.exists("saves"): os.makedirs("saves")
@@ -233,4 +218,5 @@ if __name__ == "__main__":
                     with open(fname, "w") as f: f.write(ans)
                     console.print(f"[bold green]✔ Tersimpan di folder saves/[/bold green]")
 
-    except KeyboardInterrupt: pass
+    except KeyboardInterrupt:
+        console.print("\n[yellow]Log out dari Abyss AI...[/yellow]")
