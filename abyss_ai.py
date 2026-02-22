@@ -8,9 +8,23 @@ from rich.align import Align
 
 # --- CONFIG MESIN ---
 # Saya sudah set OpenRouter sebagai mesin utama untuk Chat dan Vision (Mata)
+import os
+
+# Sekarang kode ini aman, meskipun dilihat orang di GitHub
 CONFIG = [
-    {"name": "GROQ", "key": "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", "url": "https://api.groq.com/openai/v1/chat/completions", "model": "llama-3.3-70b-versatile"},
-    {"name": "ABYSS-EYES", "key": "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", "url": "https://openrouter.ai/api/v1/chat/completions", "model": "google/gemini-2.0-flash-001"}
+    {
+        "name": "GROQ", 
+        "key": os.getenv("MY_GROQ_KEY"), # Dia akan ngambil dari sistem HP
+        "url": "https://api.groq.com/openai/v1/chat/completions", 
+        "model": "llama-3.3-70b-versatile"
+    },
+    
+    {
+        "name": "ABYSS-EYES", 
+        "key": os.getenv("MY_OR_KEY"), # Dia akan ngambil dari sistem HP
+        "url": "https://openrouter.ai/api/v1/chat/completions", 
+        "model": "google/gemini-2.0-flash-001"
+    }
 ]
 
 console = Console()
