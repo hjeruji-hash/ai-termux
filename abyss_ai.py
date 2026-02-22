@@ -9,11 +9,11 @@ from rich.align import Align
 console = Console()
 MEMORY_FILE = "abyss_memory.json"
 
-# --- CONFIG MESIN (Sistem Ternak Otomatis) ---
+# --- CONFIG MESIN (Kandang Raksasa - Auto Detect 1-20) ---
 def get_farm_engines():
     engines = []
-    # Scan 5 Akun Groq dari Termux
-    for i in range(1, 6):
+    # Auto-scan sampai 20 akun Groq
+    for i in range(1, 21):
         key = os.getenv(f"MY_GROQ_KEY_{i}")
         if key:
             engines.append({
@@ -23,8 +23,8 @@ def get_farm_engines():
                 "model": "llama-3.3-70b-versatile"
             })
     
-    # Scan 5 Akun OpenRouter dari Termux
-    for i in range(1, 6):
+    # Auto-scan sampai 20 akun OpenRouter
+    for i in range(1, 21):
         key = os.getenv(f"MY_OR_KEY_{i}")
         if key:
             engines.append({
@@ -43,20 +43,10 @@ def ask_vision(image_path, prompt):
         if not os.path.exists(image_path): return f"✘ File tidak ditemukan: {image_path}"
         or_acc = [e for e in CONFIG if "OR-ACC" in e['name']]
         if not or_acc: return "✘ Tidak ada akun OpenRouter untuk Vision!"
-        
         with open(image_path, "rb") as image_file:
             img_base64 = base64.b64encode(image_file.read()).decode('utf-8')
-        
         headers = {"Authorization": f"Bearer {or_acc[0]['key']}", "Content-Type": "application/json"}
-        data = {
-            "model": or_acc[0]['model'], 
-            "messages": [
-                {"role": "user", "content": [
-                    {"type": "text", "text": prompt}, 
-                    {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"}}
-                ]}
-            ]
-        }
+        data = {"model": or_acc[0]['model'], "messages": [{"role": "user", "content": [{"type": "text", "text": prompt}, {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{img_base64}"}}]}]}
         res = requests.post(or_acc[0]['url'], headers=headers, json=data, timeout=30)
         return res.json()['choices'][0]['message']['content'] if res.status_code == 200 else f"✘ Error: {res.text}"
     except Exception as e: return f"✘ Error Vision: {str(e)}"
@@ -79,7 +69,7 @@ def download_media(url):
     console.print(f"[bold yellow]⚡ Mendownload...[/bold yellow]")
     try:
         subprocess.run(["yt-dlp", "-o", f"{save_path}/%(title)s.%(ext)s", "--no-playlist", url], check=True)
-        return f"✔ Mission Success! Cek folder Download."
+        return f"✔ Sukses! Cek folder Download."
     except: return "✘ Gagal! Cek koneksi."
 
 def stream_infinite_music(query):
@@ -89,37 +79,32 @@ def stream_infinite_music(query):
         return "✔ Radio dimatikan."
     except: return "✘ MPV bermasalah."
 
-# --- FITUR LOADING: PAMER KANDANG ---
+# --- FITUR LOADING: AUTO-SCAN DISPLAY ---
 def hacker_loading():
     console.clear()
     total = len(CONFIG)
     tasks = ["INITIALIZING NEURAL LINK", "SYNCING API FARM", "ESTABLISHING PROTOCOL"]
-    
     print("\n" * (console.height // 5))
     with console.status("", spinner="aesthetic") as status:
         for t in tasks:
             padding = (console.width - len(t)) // 2
             console.print(" " * padding + f"[bold green]{t}[/bold green]")
-            time.sleep(0.5)
+            time.sleep(0.4)
             
-    console.print(f"\n[bold cyan] 🔎 SCANNING KANDANG API...[/bold cyan]")
+    console.print(f"\n[bold cyan] 🔎 SCANNING KANDANG API (MAX-CAPACITY: 40)...[/bold cyan]")
     time.sleep(0.3)
-    
     for i, engine in enumerate(CONFIG, 1):
-        status_ikon = "[bold green]ONLINE[/bold green]"
-        console.print(f"  [bold white]├─[/bold white] Engine {i}/{total}: [bold yellow]{engine['name']}[/bold yellow] .... {status_ikon}")
-        time.sleep(0.15)
-        
+        console.print(f"  [bold white]├─[/bold white] Engine {i}/{total}: [bold yellow]{engine['name']}[/bold yellow] .... [bold green]ONLINE[/bold green]")
+        time.sleep(0.1) # Dipercepat biar gak kelamaan kalau sapinya banyak
     console.print(f"\n[bold green] ✅ {total} SAPI SIAP DIPERAH![/bold green]")
-    time.sleep(1.2)
+    time.sleep(1)
     console.clear()
-    
-    banner = Panel.fit("[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Farmer Mode Active[/dim]", border_style="green", padding=(1, 5))
+    banner = Panel.fit("[bold green]ABYSS AI[/bold green]\n[dim]Hadi Edition | Kandang Raksasa Active[/dim]", border_style="green", padding=(1, 5))
     console.print(Align.center(banner))
     time.sleep(1)
     console.clear()
 
-# --- LOGIKA CHAT (DIEM-DIEM PINDAH AKUN) ---
+# --- LOGIKA CHAT ---
 def get_ai_response(user_input):
     chat_history.append({"role": "user", "content": user_input})
     for engine in CONFIG:
@@ -135,10 +120,8 @@ def get_ai_response(user_input):
                 chat_history.append({"role": "assistant", "content": answer})
                 save_memory(chat_history)
                 return answer, engine['name']
-            # Jika limit, loop akan lanjut ke engine berikutnya secara otomatis
-        except:
-            continue
-    return "Semua akun di kandang LIMIT/ERROR!", "FAILED"
+        except: continue
+    return "Semua sapi limit! Tambah lagi di nano.", "FAILED"
 
 def render_response(text, provider):
     full_msg = ""
@@ -147,10 +130,9 @@ def render_response(text, provider):
         for word in text.split(" "):
             full_msg += word + " "
             live.update(Panel(Markdown(full_msg), title=title, border_style="green", padding=(1,2)))
-            time.sleep(0.015)
+            time.sleep(0.01)
     console.print(Panel(Markdown(full_msg), title=title, border_style="green", padding=(1,2)))
 
-# --- LOOP UTAMA ---
 if __name__ == "__main__":
     hacker_loading()
     try:
@@ -162,8 +144,6 @@ if __name__ == "__main__":
                 chat_history.clear()
                 if os.path.exists(MEMORY_FILE): os.remove(MEMORY_FILE)
                 console.clear(); continue
-            
-            # Fitur: Vision
             if msg.lower().startswith("lihat "):
                 parts = msg.split(" ", 2)
                 if len(parts) >= 3:
@@ -171,27 +151,18 @@ if __name__ == "__main__":
                         hasil = ask_vision(parts[1].strip("'\""), parts[2])
                     console.print(Panel(hasil, title="👁️ VISION", border_style="cyan"))
                 continue
-            
-            # Fitur: Radio
             if msg.lower().startswith("setel "):
                 stream_infinite_music(msg.replace("setel ", "")); continue
-            
-            # Fitur: Downloader
             if "http" in msg:
                 link = re.findall(r'(https?://\S+)', msg)[0]
                 console.print(Panel(download_media(link), title="DOWNLOADER", border_style="yellow")); continue
-            
-            # Fitur: Chat Utama
             with console.status("[bold green]Mengetik..."):
                 ans, src = get_ai_response(msg)
             render_response(ans, src)
-            
-            # Fitur: Simpan Kode
             if "```" in ans:
                 if Prompt.ask("\n[yellow]Simpan kodingan? (y/n)[/yellow]", choices=["y", "n"], default="n") == "y":
                     if not os.path.exists("saves"): os.makedirs("saves")
                     fname = f"saves/code_{int(time.time())}.txt"
                     with open(fname, "w") as f: f.write(ans)
                     console.print(f"[bold green]✔ Tersimpan di folder saves/[/bold green]")
-    except KeyboardInterrupt:
-        pass
+    except KeyboardInterrupt: pass
