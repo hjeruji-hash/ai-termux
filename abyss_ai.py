@@ -12,17 +12,20 @@ import os
 
 # Sekarang kode ini aman, meskipun dilihat orang di GitHub
 CONFIG = [
+import os
+
+# Bagian ini yang harus kamu samakan
+CONFIG = [
     {
         "name": "GROQ",
-        "key": os.getenv("MY_GROQ_KEY"), # Hurufnya harus persis sama dengan di .bashrc
+        "key": os.getenv("MY_GROQ_KEY"), # Pastikan namanya MY_GROQ_KEY
         "url": "https://api.groq.com/openai/v1/chat/completions",
         "model": "llama-3.3-70b-versatile"
     },
-    
     {
-        "name": "ABYSS-EYES", 
-        "key": os.getenv("MY_OR_KEY"), # Dia akan ngambil dari sistem HP
-        "url": "https://openrouter.ai/api/v1/chat/completions", 
+        "name": "ABYSS-EYES",
+        "key": os.getenv("MY_OR_KEY"), # Pastikan namanya MY_OR_KEY
+        "url": "https://openrouter.ai/api/v1/chat/completions",
         "model": "google/gemini-2.0-flash-001"
     }
 ]
