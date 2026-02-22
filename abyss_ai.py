@@ -13,9 +13,9 @@ import os
 # Sekarang kode ini aman, meskipun dilihat orang di GitHub
 CONFIG = [
     {
-        "name": "GROQ", 
-        "key": os.getenv("MY_GROQ_KEY"), # Dia akan ngambil dari sistem HP
-        "url": "https://api.groq.com/openai/v1/chat/completions", 
+        "name": "GROQ",
+        "key": os.getenv("MY_GROQ_KEY"), # Hurufnya harus persis sama dengan di .bashrc
+        "url": "https://api.groq.com/openai/v1/chat/completions",
         "model": "llama-3.3-70b-versatile"
     },
     
